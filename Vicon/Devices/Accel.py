@@ -43,8 +43,9 @@
 # */
 # //==============================================================================
 
-from . import Devices
 from Vicon.GaitCore.Core import PointArray
+
+from . import Devices
 
 
 class Accel(Devices.Devices):

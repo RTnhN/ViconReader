@@ -625,9 +625,8 @@ class Markers(object):
             z = []
             if joints:
                 for jointname, joint in self._joints.items():
-                    f = frame
                     if frame >= len(joint):
-                        f = len(joint) - 1
+                        len(joint) - 1
 
                     if True:  # not center:
                         x.append(joint[frame].x)

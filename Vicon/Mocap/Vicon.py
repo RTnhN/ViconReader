@@ -496,7 +496,8 @@ class Vicon(MocapBase.MocapBase):
 
     def _fix_col_names(self, names):
         fixed_names = []
-        get_index = lambda x: x.index("Sensor") + 7
+        def get_index(x):
+            return x.index("Sensor") + 7
 
         for name in names:  # type: str
             # if "Subject".upper() in name.upper():
@@ -557,13 +558,13 @@ class Vicon(MocapBase.MocapBase):
         indices = {}
         data = {}
         current_name = None
-        last_frame = None
 
         column_names = self._fix_col_names(raw_data[start + 2])
 
         # column_names = raw_data[start + 2]
         # TODO: Don't think strings are itterable in Python
-        remove_numbers = lambda str: "".join([i for i in str if not i.isdigit()])
+        def remove_numbers(str):
+            return "".join([i for i in str if not i.isdigit()])
 
         axis = list(map(remove_numbers, raw_data[start + 3]))
         unit = raw_data[start + 4]
@@ -599,7 +600,6 @@ class Vicon(MocapBase.MocapBase):
         for row in raw_data[start + 5 : end - 1]:
             if len(row) == 0:  # Check to make sure something exists in row
                 continue
-            frame = int(row[0])
 
             for key, value in data.items():
                 if key not in naninfo:

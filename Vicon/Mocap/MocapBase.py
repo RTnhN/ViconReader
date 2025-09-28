@@ -208,11 +208,10 @@ class MocapBase(object):
         :return: keys that contain the substring
         :type: list
         """
-        my_list = []
         return list(filter(lambda x: substring in x, sensors.keys()))
 
     def _make_markers(self):
-        markers = self.data_dict["Trajectories"]
+        self.data_dict["Trajectories"]
         # FIXME: This method seems kind of pointless
 
     def _make_marker_trajs(self):

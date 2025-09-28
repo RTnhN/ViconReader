@@ -110,7 +110,7 @@ class AnimateModel:
         self.score_dict = score_data
 
     def draw(self, interval: int = 1, save_animation: bool = False):
-        ani = animation.FuncAnimation(
+        animation.FuncAnimation(
             fig=self.fig,
             func=self._animate,
             frames=self._length,
@@ -142,7 +142,6 @@ class AnimateModel:
             self.ax.set_zlim3d(list(self.z_limit))
 
         # --- Animate Markers --- #
-        marker_key = "Markers"
         marker_poses_x = []
         marker_poses_y = []
         marker_poses_z = []
@@ -151,7 +150,7 @@ class AnimateModel:
             marker_poses_y.append(value.get(i).y)
             marker_poses_z.append(value.get(i).z)
 
-        marker_ax = self.ax.scatter(
+        self.ax.scatter(
             marker_poses_x,
             marker_poses_y,
             marker_poses_z,
