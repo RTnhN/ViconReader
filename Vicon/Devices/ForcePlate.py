@@ -45,8 +45,8 @@
 
 
 from . import Devices
-from GaitCore.Core import PointArray
-from GaitCore.Core import Newton
+from Vicon.GaitCore.Core import PointArray
+from Vicon.GaitCore.Core import Newton
 
 class ForcePlate(Devices.Devices):
 

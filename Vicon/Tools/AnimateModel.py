@@ -4,9 +4,9 @@ import matplotlib.pyplot as plot
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D as plot3d
 
-from GaitCore.Core.PointArray import PointArray
-from GaitCore.Bio.Sara import Sara
-from GaitCore.Bio.Score import Score
+from Vicon.GaitCore.Core.PointArray import PointArray
+from Vicon.GaitCore.Bio.Sara import Sara
+from Vicon.GaitCore.Bio.Score import Score
 
 class AnimateModel():
     def __init__(self,  window_title: str = "3D Marker Animation",

@@ -46,16 +46,15 @@
 
 import copy
 
-from GaitCore import Core as core
-from GaitCore.Bio.Sara import Sara
-from GaitCore.Bio.Score import Score
-from GaitCore.Bio.Joint import Joint
-from GaitCore.Core.Angle import Angle
+from Vicon.GaitCore import Core as core
+from Vicon.GaitCore.Bio.Sara import Sara
+from Vicon.GaitCore.Bio.Score import Score
+from Vicon.GaitCore.Bio.Joint import Joint
+from Vicon.GaitCore.Core.Angle import Angle
 
-from GaitCore.Bio.Leg import Leg
-from GaitCore.Bio.Arm import Arm
-from GaitCore.Bio.Trunk import Trunk
-from GaitCore.Bio.Joint import Joint
+from Vicon.GaitCore.Bio.Leg import Leg
+from Vicon.GaitCore.Bio.Arm import Arm
+from Vicon.GaitCore.Bio.Trunk import Trunk
 
 
 class ModelOutput():
