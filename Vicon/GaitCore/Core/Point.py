@@ -44,60 +44,68 @@
 # //==============================================================================
 
 
+from __future__ import annotations
+
+from typing import Sequence
+
 import numpy as np
+
+
+Number = float | int
+
 
 class Point(object):
 
-    def __init__(self,x,y,z):
-        self._x = x
-        self._y = y
-        self._z = z
+    def __init__(self, x: Number, y: Number, z: Number) -> None:
+        self._x: float = float(x)
+        self._y: float = float(y)
+        self._z: float = float(z)
 
 
     @classmethod
-    def from_points(cls, P1, P2):
-        return cls(P2[0] - P1[0], P2[1] - P1[1], P2[1] - P1[1])
+    def from_points(cls, P1: Sequence[Number], P2: Sequence[Number]) -> "Point":
+        return cls(P2[0] - P1[0], P2[1] - P1[1], P2[2] - P1[2])
 
     @classmethod
-    def new_point(cls):
-        return cls(0, 0, 0)
+    def new_point(cls) -> "Point":
+        return cls(0.0, 0.0, 0.0)
 
     @classmethod
-    def from_array(cls, arr):
+    def from_array(cls, arr: Sequence[Number]) -> "Point":
         return cls(arr[0], arr[1], arr[2])
 
-    def get_unit_vector(self):
+    def get_unit_vector(self) -> "Point":
         mag = self.get_magnitude()
-        return Point(self.x,self.y, self.z)/mag
+        return Point(self.x, self.y, self.z) / mag
 
-    def get_magnitude(self):
-        return np.sqrt( self.x**2 + self.y**2 + self.z**2 )
+    def get_magnitude(self) -> float:
+        return float(np.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2))
 
     @property
-    def x(self):
+    def x(self) -> float:
         return self._x
 
     @property
-    def y(self):
+    def y(self) -> float:
         return self._y
 
     @property
-    def z(self):
+    def z(self) -> float:
         return self._z
 
     @x.setter
-    def x(self, value):
-        self._x = value
+    def x(self, value: Number) -> None:
+        self._x = float(value)
 
     @y.setter
-    def y(self, value):
-        self._y = value
+    def y(self, value: Number) -> None:
+        self._y = float(value)
 
     @z.setter
-    def z(self, value):
-        self._z = value
+    def z(self, value: Number) -> None:
+        self._z = float(value)
 
-    def __add__(self, other):
+    def __add__(self, other: "Point") -> "Point":
         """
         over ride to add points
         """
@@ -106,7 +114,7 @@ class Point(object):
         z = self.z + other.z
         return Point(x, y, z)
 
-    def __radd__(self, other):
+    def __radd__(self, other: Number) -> "Point":
 
         x = self.x + other
         y = self.y + other
@@ -114,10 +122,10 @@ class Point(object):
 
         return Point(x, y, z)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other: Number) -> "Point":
         return self.__radd__(-other)
 
-    def __sub__(self, other):
+    def __sub__(self, other: "Point") -> "Point":
         """
         over ride to subtact points
         """
@@ -127,7 +135,7 @@ class Point(object):
 
         return Point(x, y, z)
 
-    def __mul__(self, other):
+    def __mul__(self, other: Number) -> "Point":
         """
         over ride to mul points
         """
@@ -136,18 +144,18 @@ class Point(object):
         z = other * self.z
         return Point(x, y, z)
 
-    def __rmul__(self, other):
-       return self.__mul__(other)
+    def __rmul__(self, other: Number) -> "Point":
+        return self.__mul__(other)
 
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Number) -> "Point":
         x = self.x / other
         y = self.y / other
         z = self.z / other
 
         return Point(x, y, z)
 
-    def __floordiv__(self, other):
+    def __floordiv__(self, other: Number) -> "Point":
         x = self.x // other
         y = self.y // other
         z = self.z // other
@@ -155,49 +163,49 @@ class Point(object):
         return Point(x, y, z)
 
 
-    def dot(self, other):
+    def dot(self, other: "Point") -> float:
         v1 = np.squeeze(other.toarray())
         v2 = np.squeeze(self.toarray())
-        return np.dot(v1,v2)
+        return float(np.dot(v1, v2))
 
-    def __str__(self):
-            return " X: " + str(self.x) + " Y: " + str(self.y) + " Z: " + str(self.z)
+    def __str__(self) -> str:
+        return " X: " + str(self.x) + " Y: " + str(self.y) + " Z: " + str(self.z)
 
-    def __abs__(self):
+    def __abs__(self) -> "Point":
         return Point(abs(self.x), abs(self.y), abs(self.z))
 
-    def toarray(self):
-        return np.array((self.x, self.y, self.z)).reshape((-1,1))
+    def toarray(self) -> np.ndarray:
+        return np.array((self.x, self.y, self.z), dtype=float).reshape((-1, 1))
 
 
-def distance(point1, point2):
+def distance(point1: Point, point2: Point) -> float:
     """
     get the distance between two points
     """
     ans = np.sum(np.power((point1 - point2).toarray(), 2))
-    return np.sqrt(float(ans) )
+    return float(np.sqrt(float(ans)))
 
-def point_to_vector(point):
+def point_to_vector(point: Point) -> np.ndarray:
     """Returns a vectorized representation of a Point object. The vector is of the form [[x], [y], [z]]"""
-    return  np.array([[point.x], [point.y], [point.z]])
+    return np.array([[point.x], [point.y], [point.z]], dtype=float)
 
-def vector_to_point(vector):
+def vector_to_point(vector: np.ndarray | Sequence[Sequence[Number]]) -> Point:
     """Returns a Point object from its vector representation."""
     return Point(vector[0][0], vector[1][0], vector[2][0])
 
-def cross(point1, point2):
+def cross(point1: Point, point2: Point) -> Point:
     """Cross product wrapper """
     v1 = np.squeeze(point1.toarray())
     v2 = np.squeeze(point2.toarray())
-    v3 = np.cross(v1,v2)
+    v3 = np.cross(v1, v2)
     return Point.from_array(v3)
 
 
 
-def dot(point1, point2):
+def dot(point1: Point, point2: Point) -> float:
     v1 = np.squeeze(point1.toarray())
     v2 = np.squeeze(point2.toarray())
-    return np.dot(v1,v2)
+    return float(np.dot(v1, v2))
 
 if __name__ == '__main__':
     p1 = Point(5,5,5)

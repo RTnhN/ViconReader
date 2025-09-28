@@ -43,20 +43,27 @@
 # */
 # //==============================================================================
 
-class Angle():
+from __future__ import annotations
+
+from typing import Mapping, Sequence
+
+
+class Angle:
     """
     Angle class
     """
 
-    def __init__(self, angle_data: dict = None):
-        
-        self._rx = angle_data.get('RX', {}).get('data', [])
-        self._ry = angle_data.get('RY', {}).get('data', [])
-        self._rz = angle_data.get('RZ', {}).get('data', [])
+    def __init__(self, angle_data: Mapping[str, Mapping[str, object]] | None = None):
 
-        self._tx = angle_data.get('TX', {}).get('data', [])
-        self._ty = angle_data.get('TY', {}).get('data', [])
-        self._tz = angle_data.get('TZ', {}).get('data', [])
+        angle_data = angle_data or {}
+
+        self._rx: Sequence[float] = angle_data.get('RX', {}).get('data', [])
+        self._ry: Sequence[float] = angle_data.get('RY', {}).get('data', [])
+        self._rz: Sequence[float] = angle_data.get('RZ', {}).get('data', [])
+
+        self._tx: Sequence[float] = angle_data.get('TX', {}).get('data', [])
+        self._ty: Sequence[float] = angle_data.get('TY', {}).get('data', [])
+        self._tz: Sequence[float] = angle_data.get('TZ', {}).get('data', [])
 
         # Set rotational units
         rot_units =    [angle_data.get('RX', {}).get('unit'),
@@ -66,7 +73,7 @@ class Angle():
         if not self.check_units(unit_list=rot_units):
             # TODO: Throw error
             print("Units not the same")
-            self._rot_unit = "units_not_same"
+            self._rot_unit: str | None = "units_not_same"
         else:
             self._rot_unit = rot_units[0]
 
@@ -78,43 +85,43 @@ class Angle():
         if not self.check_units(unit_list=trans_units):
             # TODO: Throw error
             print("Units not the same")
-            self._trans_unit = "units_not_same"
+            self._trans_unit: str | None = "units_not_same"
         else:
             self._trans_unit = trans_units[0]
 
     @property
-    def rot_unit(self):
+    def rot_unit(self) -> str | None:
         return self._rot_unit
 
     @property
-    def trans_unit(self):
+    def trans_unit(self) -> str | None:
         return self._trans_unit
 
     @property
-    def rx(self):
+    def rx(self) -> Sequence[float]:
         return self._rx
 
     @property
-    def ry(self):
+    def ry(self) -> Sequence[float]:
         return self._ry
 
     @property
-    def rz(self):
+    def rz(self) -> Sequence[float]:
         return self._rz
 
     @property
-    def tx(self):
+    def tx(self) -> Sequence[float]:
         return self._tx
 
     @property
-    def ty(self):
+    def ty(self) -> Sequence[float]:
         return self._ty
 
     @property
-    def tz(self):
+    def tz(self) -> Sequence[float]:
         return self._tz
 
-    def check_units(self, unit_list:list):
+    def check_units(self, unit_list: Sequence[str | None]) -> bool:
         unit_tmp = unit_list[0]
         for unit in unit_list:
             if unit != unit_tmp:
