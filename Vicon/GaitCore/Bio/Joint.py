@@ -47,11 +47,12 @@ from .Sara import Sara
 from .Score import Score
 
 
-class Joint():
+class Joint:
     """
     joint class
     """
-    def __init__(self, name: str, angle_data=None, moment = None, power = None, force = None):
+
+    def __init__(self, name: str, angle_data=None, moment=None, power=None, force=None):
         """
         Holds the joint data form the model output
         :param angle: angles

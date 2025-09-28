@@ -48,11 +48,8 @@ from Vicon.GaitCore.Core import PointArray
 
 
 class Gyro(Devices.Devices):
-
     def __init__(self, name, sensor):
-        gyro = PointArray.PointArray(sensor["GYROX"]["data"],
-                           sensor["GYROY"]["data"],
-                           sensor["GYROZ"]["data"])
+        gyro = PointArray.PointArray(
+            sensor["GYROX"]["data"], sensor["GYROY"]["data"], sensor["GYROZ"]["data"]
+        )
         super(Gyro, self).__init__(name, gyro, "Gyro")
-
-

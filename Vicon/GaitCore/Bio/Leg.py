@@ -44,13 +44,11 @@
 # //==============================================================================
 
 
-
-
-
 class Leg(object):
     """
     Hold the joints of a leg
     """
+
     def __init__(self, hip, knee, ankle):
         """
         :param hip: hip joint

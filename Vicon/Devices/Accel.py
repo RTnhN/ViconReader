@@ -48,11 +48,8 @@ from Vicon.GaitCore.Core import PointArray
 
 
 class Accel(Devices.Devices):
-
     def __init__(self, name, sensor):
-        accel = PointArray.PointArray(sensor["ACCX"]["data"],
-                            sensor["ACCY"]["data"],
-                            sensor["ACCZ"]["data"])
+        accel = PointArray.PointArray(
+            sensor["ACCX"]["data"], sensor["ACCY"]["data"], sensor["ACCZ"]["data"]
+        )
         super(Accel, self).__init__(name, accel, "Accel")
-
-

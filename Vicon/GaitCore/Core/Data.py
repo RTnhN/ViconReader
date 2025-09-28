@@ -74,7 +74,6 @@ class Data(object):
         """Return the data and time series as :class:`numpy.ndarray` instances."""
         return np.asarray(self._data), np.asarray(self._time)
 
-
     # @data.setter
     # def data(self, value):
     #     """

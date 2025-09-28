@@ -43,10 +43,12 @@
 # */
 # //==============================================================================
 
+
 class Trunk(object):
     """
     Hold the joints of a leg
     """
+
     def __init__(self, head, spine, thorax, plevis):
         """
         :param head: head joint

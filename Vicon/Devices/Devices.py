@@ -43,7 +43,6 @@
 # */
 # //==============================================================================
 class Devices(object):
-
     def __init__(self, name, sensor, type, offest=20):
         """
         Base class for Device connected to the Vicon

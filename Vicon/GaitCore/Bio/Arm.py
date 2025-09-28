@@ -44,13 +44,11 @@
 # //==============================================================================
 
 
-
-
-
 class Arm(object):
     """
     Hold the joints of a leg
     """
+
     def __init__(self, shoulder, elbow, wrist):
         """
         :param shoulder: shoulder joint

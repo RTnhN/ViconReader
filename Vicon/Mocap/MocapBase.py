@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # //==============================================================================
 # /*
@@ -50,9 +49,19 @@ import matplotlib.pyplot as plt
 from Vicon.Interpolation import Interpolation
 import abc
 from Vicon.Interpolation import Akmia
-class MocapBase(object):
 
-    def __init__(self, file_path, verbose=False, interpolate=True, maxnanstotal=-1, maxnansrow=-1, sanitize=True, inerpolation_method=Akmia.Akmia):
+
+class MocapBase(object):
+    def __init__(
+        self,
+        file_path,
+        verbose=False,
+        interpolate=True,
+        maxnanstotal=-1,
+        maxnansrow=-1,
+        sanitize=True,
+        inerpolation_method=Akmia.Akmia,
+    ):
         self._file_path = file_path
         self._verbose = verbose
         self._interpolate = interpolate
@@ -74,18 +83,34 @@ class MocapBase(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def open_file(self, file_path, verbose=False, interpolate=True, maxnanstotal=-1, maxnansrow=-1,
-                        sanitize=True):
+    def open_file(
+        self,
+        file_path,
+        verbose=False,
+        interpolate=True,
+        maxnanstotal=-1,
+        maxnansrow=-1,
+        sanitize=True,
+    ):
         raise NotImplementedError
 
     @abc.abstractmethod
     def _seperate_csv_sections(self, all_data):
         raise NotImplementedError
 
-
     @abc.abstractmethod
-    def _extract_values(self, raw_data, start, end, verbose=False, category="", interpolate=True, maxnanstotal=-1,
-                    maxnansrow=-1, sanitize=True):
+    def _extract_values(
+        self,
+        raw_data,
+        start,
+        end,
+        verbose=False,
+        category="",
+        interpolate=True,
+        maxnanstotal=-1,
+        maxnansrow=-1,
+        sanitize=True,
+    ):
         raise NotImplementedError
 
     def _find_number_of_frames(self, col):
@@ -155,7 +180,7 @@ class MocapBase(object):
         :return: model joints keys
         :type: list of keys
         """
-        return self.data_dict["Joints"].keys() 
+        return self.data_dict["Joints"].keys()
 
     def _check_keys(self, key_list, key):
         """
@@ -173,7 +198,7 @@ class MocapBase(object):
         :param key:
         :return:
         """
-        return int(''.join(filter(str.isdigit, key)))
+        return int("".join(filter(str.isdigit, key)))
 
     def _filter_dict(self, sensors, substring):
         """
@@ -195,7 +220,9 @@ class MocapBase(object):
         generate IMU models
         :return: None
         """
-        self._markers = markers.Markers(self.data_dict["Trajectories"], self._file_path[:len(self._file_path)-4])
+        self._markers = markers.Markers(
+            self.data_dict["Trajectories"], self._file_path[: len(self._file_path) - 4]
+        )
         self._markers.make_markers()
 
     @abc.abstractmethod
@@ -211,8 +238,9 @@ class MocapBase(object):
 
     def _len_data(self, category):
         """Returns the length of the data section of a given category"""
-        return len(next(next(self.data_dict[category].itervalues()).itervalues())["data"])
-
+        return len(
+            next(next(self.data_dict[category].itervalues()).itervalues())["data"]
+        )
 
     def is_sanitized(self, category, subject):
         if category not in self._sanitized:
@@ -222,17 +250,37 @@ class MocapBase(object):
                 return True
         return False
 
-    def graph(self, category, subject, field, showinterpolated=True, colorinterpolated=True, limits=None):
+    def graph(
+        self,
+        category,
+        subject,
+        field,
+        showinterpolated=True,
+        colorinterpolated=True,
+        limits=None,
+    ):
         """Graphs the data specified. If showinterpolated is set to False, interpolated values will not be shown."""
-        if not (category in self.data_dict and subject in self.data_dict[category] and field in
-                self.data_dict[category][subject]):
+        if not (
+            category in self.data_dict
+            and subject in self.data_dict[category]
+            and field in self.data_dict[category][subject]
+        ):
             return  # We don't have any data for this field!
         interpolated = True in self._nan_dict[category][subject][field]
-        if not interpolated or (not colorinterpolated and showinterpolated):  # Simplest case - just graph the data
+        if not interpolated or (
+            not colorinterpolated and showinterpolated
+        ):  # Simplest case - just graph the data
             plt.plot(self.data_dict[category][subject][field]["data"])
             plt.xlabel("Frame")
             plt.ylabel(self.data_dict[category][subject][field]["unit"])
-            plt.title("Data in category " + category + ", in subject " + subject + ", in field " + field)
+            plt.title(
+                "Data in category "
+                + category
+                + ", in subject "
+                + subject
+                + ", in field "
+                + field
+            )
             if limits is not None:
                 plt.xlim(limits)
             plt.show()
@@ -263,36 +311,64 @@ class MocapBase(object):
             flagorg = True
             for blk in orgdatablocks:
                 if flagorg:
-                    plt.plot(blk, data[blk[0]:blk[len(blk) - 1] + 1], "C0", label="Original Data")
+                    plt.plot(
+                        blk,
+                        data[blk[0] : blk[len(blk) - 1] + 1],
+                        "C0",
+                        label="Original Data",
+                    )
                     flagorg = False
                 else:
-                    plt.plot(blk, data[blk[0]:blk[len(blk) - 1] + 1], "C0")
+                    plt.plot(blk, data[blk[0] : blk[len(blk) - 1] + 1], "C0")
 
             if showinterpolated:
                 flagint = True
                 for blk in interdatablocks:
                     if flagint:
-                        plt.plot([blk[0]-1] + blk + [blk[len(blk) - 1] + 1], data[blk[0]-1:blk[len(blk) - 1] + 2], "C1", label="Interpolated Data")
+                        plt.plot(
+                            [blk[0] - 1] + blk + [blk[len(blk) - 1] + 1],
+                            data[blk[0] - 1 : blk[len(blk) - 1] + 2],
+                            "C1",
+                            label="Interpolated Data",
+                        )
                         flagint = False
                     else:
-                        plt.plot([blk[0]-1] + blk + [blk[len(blk) - 1] + 1], data[blk[0]-1:blk[len(blk) - 1] + 2], "C1")
+                        plt.plot(
+                            [blk[0] - 1] + blk + [blk[len(blk) - 1] + 1],
+                            data[blk[0] - 1 : blk[len(blk) - 1] + 2],
+                            "C1",
+                        )
                 plt.legend()
 
             plt.xlabel("Frame")
             plt.ylabel(self.data_dict[category][subject][field]["unit"])
-            plt.title("Data in category " + category + ", in subject " + subject + ", in field " + field)
+            plt.title(
+                "Data in category "
+                + category
+                + ", in subject "
+                + subject
+                + ", in field "
+                + field
+            )
             if limits is not None:
                 plt.xlim(limits)
             plt.show()
 
-    def _marker_interpolation(self, value, key, naninfo, category, interpolate, sanitize, verbose):
+    def _marker_interpolation(
+        self, value, key, naninfo, category, interpolate, sanitize, verbose
+    ):
         ### OLD NOT USED
         #  If we have NaNs and the whole row isn't NaNs...
         #  No interpolation method can do anything with an array of NaNs,
         #  so this way we save ourselves a bit of computation
 
         nans = np.isnan(value["X"]["data"])
-        if True in nans and False in nans and interpolate and naninfo[key]["X"]["interpolate"]:
+        if (
+            True in nans
+            and False in nans
+            and interpolate
+            and naninfo[key]["X"]["interpolate"]
+        ):
             if category not in self._nan_dict:
                 self._nan_dict[category] = {}
             if key not in self._nan_dict[category]:
@@ -301,19 +377,35 @@ class MocapBase(object):
             self._nan_dict[category][key]["Y"] = nans
             self._nan_dict[category][key]["Z"] = nans
             if verbose:
-                print("Interpolating missing values in field X Y Z" + ", in subject " + key + \
-                      ", in category " + category + "...")
+                print(
+                    "Interpolating missing values in field X Y Z"
+                    + ", in subject "
+                    + key
+                    + ", in category "
+                    + category
+                    + "..."
+                )
             # x, y, z = Interpolation.velocity_method(value["X"]["data"], value["Y"]["data"], value["Z"]["data"])
             # value["X"]["data"] = Interpolation.akmia(value["X"], verbose, category, "X", key)
             # value["Y"]["data"] = Interpolation.akmia(value["X"], verbose, category, "X", key)
             # value["Z"]["data"] = Interpolation.akmia(value["X"], verbose, category, "X", key)
         else:
-            for sub_key, sub_value in value.items():  # For each field under each subject...
+            for (
+                sub_key,
+                sub_value,
+            ) in value.items():  # For each field under each subject...
                 nans = np.isnan(sub_value["data"])
                 if False not in nans:
                     if verbose:
-                        print("Could not interpolate field " + sub_key + ", in subject " + key + \
-                              ", in category " + category + ", as all values were nans!")
+                        print(
+                            "Could not interpolate field "
+                            + sub_key
+                            + ", in subject "
+                            + key
+                            + ", in category "
+                            + category
+                            + ", as all values were nans!"
+                        )
                     if sanitize and sub_key != "":
                         sub_value["data"] = [0 for i in range(len(sub_value["data"]))]
                         if verbose:
@@ -326,14 +418,17 @@ class MocapBase(object):
                     self._nan_dict[category] = {}
                 if key not in self._nan_dict[category]:
                     self._nan_dict[category][key] = {}
-                self._nan_dict[category][key][sub_key] = self._false_of_n(len(sub_value["data"]))
-
+                self._nan_dict[category][key][sub_key] = self._false_of_n(
+                    len(sub_value["data"])
+                )
 
     def set_marker_interpolation(self, method):
         assert issubclass(method, Interpolation.Interpolation)
         self.my_marker_interpolation = method
 
-    def _prepare_interpolation(self, value, key, naninfo, category, interpolate, sanitize, verbose):
+    def _prepare_interpolation(
+        self, value, key, naninfo, category, interpolate, sanitize, verbose
+    ):
         for sub_key, sub_value in value.items():  # For each field under each subject...
             #  If we have NaNs and the whole row isn't NaNs...
             #  No interpolation method can do anything with an array of NaNs,
@@ -346,15 +441,31 @@ class MocapBase(object):
                     self._nan_dict[category][key] = {}
                 self._nan_dict[category][key][sub_key] = nans
                 if verbose and interpolate:
-                    print("Interpolating missing values in field " + sub_key + ", in subject " + key + \
-                          ", in category " + category + "...")
+                    print(
+                        "Interpolating missing values in field "
+                        + sub_key
+                        + ", in subject "
+                        + key
+                        + ", in category "
+                        + category
+                        + "..."
+                    )
                 if interpolate:
-                    sub_value["data"] = Interpolation.akmia(sub_value, verbose, category, sub_key, key)
+                    sub_value["data"] = Interpolation.akmia(
+                        sub_value, verbose, category, sub_key, key
+                    )
             else:
                 if False not in nans:
                     if verbose:
-                        print("Could not interpolate field " + sub_key + ", in subject " + key + \
-                              ", in category " + category + ", as all values were nans!")
+                        print(
+                            "Could not interpolate field "
+                            + sub_key
+                            + ", in subject "
+                            + key
+                            + ", in category "
+                            + category
+                            + ", as all values were nans!"
+                        )
                     if sanitize and sub_key != "":
                         sub_value["data"] = [0 for i in range(len(sub_value["data"]))]
                         if verbose:
@@ -367,4 +478,6 @@ class MocapBase(object):
                     self._nan_dict[category] = {}
                 if key not in self._nan_dict[category]:
                     self._nan_dict[category][key] = {}
-                self._nan_dict[category][key][sub_key] = self._false_of_n(len(sub_value["data"]))
+                self._nan_dict[category][key][sub_key] = self._false_of_n(
+                    len(sub_value["data"])
+                )

@@ -57,7 +57,6 @@ Number = float | int
 
 
 class PointArray:
-
     def __init__(
         self,
         x: Sequence[float] | None = None,
@@ -85,7 +84,9 @@ class PointArray:
             y = arr[1, :].tolist()
             z = arr[2, :].tolist()
         else:
-            raise ValueError("Array must have three coordinates along the specified dimension")
+            raise ValueError(
+                "Array must have three coordinates along the specified dimension"
+            )
 
         return cls(x=x, y=y, z=z)
 

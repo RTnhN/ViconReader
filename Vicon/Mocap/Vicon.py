@@ -53,9 +53,25 @@ from Vicon.Mocap import MocapBase
 
 
 class Vicon(MocapBase.MocapBase):
-
-    def __init__(self, file_path, verbose=False, interpolate=True, maxnanstotal=-1, maxnansrow=-1, sanitize=True,inerpolation_method=Akmia.Akmia):
-        super(Vicon, self).__init__(file_path, verbose, interpolate, maxnanstotal, maxnansrow, sanitize,inerpolation_method)
+    def __init__(
+        self,
+        file_path,
+        verbose=False,
+        interpolate=True,
+        maxnanstotal=-1,
+        maxnansrow=-1,
+        sanitize=True,
+        inerpolation_method=Akmia.Akmia,
+    ):
+        super(Vicon, self).__init__(
+            file_path,
+            verbose,
+            interpolate,
+            maxnanstotal,
+            maxnansrow,
+            sanitize,
+            inerpolation_method,
+        )
         self._file_path = file_path
         self._number_of_frames = 0
         self._T_EMGs = {}
@@ -75,9 +91,14 @@ class Vicon(MocapBase.MocapBase):
         self.parse()
 
     def parse(self):
-
-        self.data_dict = self.open_file(self._file_path, verbose=self._verbose, interpolate=self._interpolate,
-                                              maxnanstotal=self._maxanstotal, maxnansrow=self._maxnansrow, sanitize=self._sanitize)
+        self.data_dict = self.open_file(
+            self._file_path,
+            verbose=self._verbose,
+            interpolate=self._interpolate,
+            maxnanstotal=self._maxanstotal,
+            maxnansrow=self._maxnansrow,
+            sanitize=self._sanitize,
+        )
         # Make Joint objects and add them to the list
         self._make_joint_objs()
 
@@ -87,7 +108,6 @@ class Vicon(MocapBase.MocapBase):
         self._make_IMUs(verbose=self._verbose)
         self._make_marker_trajs()
         self._make_model(verbose=self._verbose)
-
 
     @property
     def accels(self):
@@ -101,27 +121,27 @@ class Vicon(MocapBase.MocapBase):
     @property
     def force_plate(self):
         """
-         Get the force plate dict
-         :return: Force plates
-         :type: dict
+        Get the force plate dict
+        :return: Force plates
+        :type: dict
         """
         return self._force_plates
 
     @property
     def IMUs(self):
         """
-         Get the IMU dict
-         :return: IMU
-         :type: dict
+        Get the IMU dict
+        :return: IMU
+        :type: dict
         """
         return self._IMUs
 
     @property
     def T_EMGs(self):
         """
-         Get the EMG dict
-         :return: T EMG
-         :type: dict
+        Get the EMG dict
+        :return: T EMG
+        :type: dict
         """
         return self._T_EMGs
 
@@ -242,23 +262,22 @@ class Vicon(MocapBase.MocapBase):
 
     def get_emg_values(self, index):
         """
-       Get the EMG values
-       :param index: number of sensor
-       :return: EMG
-       :rtype: EMG.EMG
+        Get the EMG values
+        :param index: number of sensor
+        :return: EMG
+        :rtype: EMG.EMG
         """
         return self._EMGs[index]
 
     def get_emg_keys(self):
         """
-       Get the EMG keys
-       :return: list of keys
-       :rtype: list
+        Get the EMG keys
+        :return: list of keys
+        :rtype: list
         """
         return self._EMGs.keys()
 
     def get_all_emgs(self):
-
         return self._EMGs
 
     def get_t_emg(self, index):
@@ -288,15 +307,14 @@ class Vicon(MocapBase.MocapBase):
         return self._T_EMGs
 
     def _make_joint_objs(self, data_dict: dict = None):
-        """[summary]
-        """
+        """[summary]"""
         self._joint_objs.clear()
         if data_dict is None:
             data_dict = self.data_dict
-        if data_dict.get('Joints') is None:
+        if data_dict.get("Joints") is None:
             return
         for key, value in data_dict.get("Joints").items():
-            self._joint_objs[key] = Joint(name = key, angle_data = value)
+            self._joint_objs[key] = Joint(name=key, angle_data=value)
 
         return
 
@@ -306,7 +324,9 @@ class Vicon(MocapBase.MocapBase):
         :return:
         """
         if "Model Outputs" in self.data_dict:
-            self._model_output = modeloutput.ModelOutput(self.data_dict["Model Outputs"], joints = self._joint_objs)
+            self._model_output = modeloutput.ModelOutput(
+                self.data_dict["Model Outputs"], joints=self._joint_objs
+            )
             if verbose:
                 print("Model Outputs generated")
         elif verbose:
@@ -318,9 +338,10 @@ class Vicon(MocapBase.MocapBase):
         :return: None
         """
         if "Devices" in self.data_dict:
-
             sensors = self.data_dict["Devices"]
-            keys = self._filter_dict(sensors, 'Force_Plate')  # + ['Combined Moment'] + ['Combined CoP']
+            keys = self._filter_dict(
+                sensors, "Force_Plate"
+            )  # + ['Combined Moment'] + ['Combined CoP']
 
             if any("Force_Plate" in word for word in keys):
                 key_numbers = set()
@@ -328,10 +349,12 @@ class Vicon(MocapBase.MocapBase):
                     key_numbers.add(self._filter_number(key))
 
                 for i in key_numbers:
-                    self._force_plates[i] = ForcePlate.ForcePlate("Force_Plate_" + str(i),
-                                                                  sensors["Force_Plate__Force_" + str(i)],
-                                                                  sensors["Force_Plate__Moment_" + str(i)],
-                                                                  sensors["Force_Plate__CoP_"+ str(i)])
+                    self._force_plates[i] = ForcePlate.ForcePlate(
+                        "Force_Plate_" + str(i),
+                        sensors["Force_Plate__Force_" + str(i)],
+                        sensors["Force_Plate__Moment_" + str(i)],
+                        sensors["Force_Plate__CoP_" + str(i)],
+                    )
 
                 if verbose:
                     print("Force plate models generated")
@@ -340,7 +363,6 @@ class Vicon(MocapBase.MocapBase):
         elif verbose:
             print("A scan for force plates found no Devices")
 
-
     def _make_EMGs(self, verbose=True):
         """
         generate EMG models
@@ -348,14 +370,18 @@ class Vicon(MocapBase.MocapBase):
         """
         if "Devices" in self.data_dict:
             sensors = self.data_dict["Devices"]
-            all_keys = self._filter_dict(sensors, 'EMG')
+            all_keys = self._filter_dict(sensors, "EMG")
             if len(all_keys) > 0:
-                all_keys = self._filter_dict(sensors, 'EMG')
-                T_EMG_keys = self._filter_dict(sensors, 'T_EMG')
+                all_keys = self._filter_dict(sensors, "EMG")
+                T_EMG_keys = self._filter_dict(sensors, "T_EMG")
                 EMG_keys = [x for x in all_keys if x not in T_EMG_keys]
                 for e_key, t_key in zip(EMG_keys, T_EMG_keys):
-                    self._T_EMGs[self._filter_number(t_key)] = EMG.EMG(t_key, sensors[t_key]["EMG"])
-                    self._EMGs[self._filter_number(e_key)] = EMG.EMG(e_key, sensors[e_key]["IM EMG"])
+                    self._T_EMGs[self._filter_number(t_key)] = EMG.EMG(
+                        t_key, sensors[t_key]["EMG"]
+                    )
+                    self._EMGs[self._filter_number(e_key)] = EMG.EMG(
+                        e_key, sensors[e_key]["IM EMG"]
+                    )
                 if verbose:
                     print("EMG models generated")
             elif verbose:
@@ -370,7 +396,7 @@ class Vicon(MocapBase.MocapBase):
         """
         if "Devices" in self.data_dict:
             sensors = self.data_dict["Devices"]
-            keys = self._filter_dict(sensors, 'IMU')
+            keys = self._filter_dict(sensors, "IMU")
             if len(keys) > 0:
                 for key in keys:
                     self._IMUs[self._filter_number(key)] = IMU.IMU(key, sensors[key])
@@ -388,10 +414,12 @@ class Vicon(MocapBase.MocapBase):
         """
         if "Devices" in self.data_dict:
             sensors = self.data_dict["Devices"]
-            keys = self._filter_dict(sensors, 'Accel')
+            keys = self._filter_dict(sensors, "Accel")
             if len(keys) > 0:
                 for key in keys:
-                    self._accels[self._filter_number(key)] = Accel.Accel(key, sensors[key])
+                    self._accels[self._filter_number(key)] = Accel.Accel(
+                        key, sensors[key]
+                    )
                 if verbose:
                     print("Accel models generated")
             elif verbose:
@@ -399,8 +427,15 @@ class Vicon(MocapBase.MocapBase):
         elif verbose:
             print("A scan for Accels found no Devices")
 
-    def open_file(self, file_path, verbose=False, interpolate=True, maxnanstotal=-1, maxnansrow=-1,
-                        sanitize=True):
+    def open_file(
+        self,
+        file_path,
+        verbose=False,
+        interpolate=True,
+        maxnanstotal=-1,
+        maxnansrow=-1,
+        sanitize=True,
+    ):
         """
         parses the Vicon sensor data into a dictionary
         :param file_path: file path
@@ -411,7 +446,7 @@ class Vicon(MocapBase.MocapBase):
         # open the file and get the column names, axis, and units
         if verbose:
             print("Reading data from file " + file_path)
-        with open(file_path, mode='r') as csv_file:
+        with open(file_path, mode="r") as csv_file:
             reader = csv.reader(csv_file)
             raw_data = list(reader)
 
@@ -420,9 +455,17 @@ class Vicon(MocapBase.MocapBase):
         names, segs = self._seperate_csv_sections(raw_data)
 
         for index, output in enumerate(names):
-            data[output] = self._extract_values(raw_data, segs[index], segs[index + 1], verbose=verbose,
-                                                category=output, interpolate=interpolate, maxnanstotal=maxnanstotal,
-                                                maxnansrow=maxnansrow, sanitize=sanitize)
+            data[output] = self._extract_values(
+                raw_data,
+                segs[index],
+                segs[index + 1],
+                verbose=verbose,
+                category=output,
+                interpolate=interpolate,
+                maxnanstotal=maxnanstotal,
+                maxnansrow=maxnansrow,
+                sanitize=sanitize,
+            )
 
         return data
 
@@ -438,11 +481,11 @@ class Vicon(MocapBase.MocapBase):
                 raw_col.append("")
 
         fitlered_col: List[Any] = [item for item in raw_col if not item.isdigit()]
-        fitlered_col = filter(lambda a: a != 'Frame', list(fitlered_col))
+        fitlered_col = filter(lambda a: a != "Frame", list(fitlered_col))
         fitlered_col = filter(lambda a: a != "", list(fitlered_col))
         fitlered_col = list(fitlered_col)
-        if 'Devices' in fitlered_col:
-            fitlered_col = fitlered_col[fitlered_col.index("Devices"):]
+        if "Devices" in fitlered_col:
+            fitlered_col = fitlered_col[fitlered_col.index("Devices") :]
 
         inx = []
         for name in fitlered_col:
@@ -456,7 +499,6 @@ class Vicon(MocapBase.MocapBase):
         get_index = lambda x: x.index("Sensor") + 7
 
         for name in names:  # type: str
-
             # if "Subject".upper() in name.upper():
             #     fixed = ''.join(
             #         [i for i in name.replace("Subject", "").replace(":", "").replace("|", "") if
@@ -464,13 +506,11 @@ class Vicon(MocapBase.MocapBase):
             #     fixed_names.append(fixed)
 
             if ":" in name:
-
                 index = name.index(":")
 
-                fixed_names.append(name[index + 1:])
+                fixed_names.append(name[index + 1 :])
 
             elif "AMTI" in name:
-
                 if "Force" in name:
                     unit = "_Force_"
                 elif "Moment" in name:
@@ -478,7 +518,7 @@ class Vicon(MocapBase.MocapBase):
                 elif "CoP" in name:
                     unit = "_CoP_"
 
-                number = name[name.find('#') + 1]
+                number = name[name.find("#") + 1]
                 fixed = "Force_Plate_" + unit + str(number)
                 fixed_names.append(fixed)
 
@@ -487,23 +527,33 @@ class Vicon(MocapBase.MocapBase):
                 fixed_names.append(fixed)
 
             elif "Accelerometers" in name:
-                fixed = "Accel_" + name[get_index(name):]
+                fixed = "Accel_" + name[get_index(name) :]
                 fixed_names.append(fixed)
 
             elif "IMU AUX" in name:
-                fixed = "IMU_" + name[get_index(name):]
+                fixed = "IMU_" + name[get_index(name) :]
                 fixed_names.append(fixed)
 
             elif "IMU EMG" in name:
-                fixed = "EMG_" + name[get_index(name):]
+                fixed = "EMG_" + name[get_index(name) :]
                 fixed_names.append(fixed)
             else:
                 fixed_names.append(name)
 
         return fixed_names
 
-    def _extract_values(self, raw_data, start, end, verbose=False, category="", interpolate=True, maxnanstotal=-1,
-                        maxnansrow=-1, sanitize=True):
+    def _extract_values(
+        self,
+        raw_data,
+        start,
+        end,
+        verbose=False,
+        category="",
+        interpolate=True,
+        maxnanstotal=-1,
+        maxnansrow=-1,
+        sanitize=True,
+    ):
         indices = {}
         data = {}
         current_name = None
@@ -513,7 +563,7 @@ class Vicon(MocapBase.MocapBase):
 
         # column_names = raw_data[start + 2]
         # TODO: Don't think strings are itterable in Python
-        remove_numbers = lambda str: ''.join([i for i in str if not i.isdigit()])
+        remove_numbers = lambda str: "".join([i for i in str if not i.isdigit()])
 
         axis = list(map(remove_numbers, raw_data[start + 3]))
         unit = raw_data[start + 4]
@@ -546,8 +596,8 @@ class Vicon(MocapBase.MocapBase):
         # naninfo[subject][field]["interpolate"] is a boolean value that determines if that field can be interpolated
         # according to the rules set by the user
         naninfo = {}
-        for row in raw_data[start + 5:end - 1]:
-            if len(row) == 0: # Check to make sure something exists in row
+        for row in raw_data[start + 5 : end - 1]:
+            if len(row) == 0:  # Check to make sure something exists in row
                 continue
             frame = int(row[0])
 
@@ -558,22 +608,43 @@ class Vicon(MocapBase.MocapBase):
                     if sub_key not in naninfo[key]:
                         naninfo[key][sub_key] = {"total": 0, "row": 0, "rowtemp": 0}
                     index = indices[(key, sub_key)]
-                    if index >= len(row) or row[index] == '' or str(row[index]).lower() == "nan":
+                    if (
+                        index >= len(row)
+                        or row[index] == ""
+                        or str(row[index]).lower() == "nan"
+                    ):
                         val = np.nan
                         naninfo[key][sub_key]["total"] += 1
                         naninfo[key][sub_key]["rowtemp"] += 1
-                    elif '!' in row[index]:
-                        if naninfo[key][sub_key]["rowtemp"] > naninfo[key][sub_key]["row"]:
-                            naninfo[key][sub_key]["row"] = naninfo[key][sub_key]["rowtemp"]
+                    elif "!" in row[index]:
+                        if (
+                            naninfo[key][sub_key]["rowtemp"]
+                            > naninfo[key][sub_key]["row"]
+                        ):
+                            naninfo[key][sub_key]["row"] = naninfo[key][sub_key][
+                                "rowtemp"
+                            ]
                         naninfo[key][sub_key]["rowtemp"] = 0
                         val = float(row[index][1:])
                         if verbose and (key, sub_key) not in flags:
-                            print("Reading previously interpolated data in category " + category + \
-                                  ", subject " + key + ", field " + sub_key + ".")
+                            print(
+                                "Reading previously interpolated data in category "
+                                + category
+                                + ", subject "
+                                + key
+                                + ", field "
+                                + sub_key
+                                + "."
+                            )
                             flags.append((key, sub_key))
                     else:
-                        if naninfo[key][sub_key]["rowtemp"] > naninfo[key][sub_key]["row"]:
-                            naninfo[key][sub_key]["row"] = naninfo[key][sub_key]["rowtemp"]
+                        if (
+                            naninfo[key][sub_key]["rowtemp"]
+                            > naninfo[key][sub_key]["row"]
+                        ):
+                            naninfo[key][sub_key]["row"] = naninfo[key][sub_key][
+                                "rowtemp"
+                            ]
                         naninfo[key][sub_key]["rowtemp"] = 0
                         val = float(row[index])
                     sub_value["data"].append(val)
@@ -587,36 +658,75 @@ class Vicon(MocapBase.MocapBase):
                     info["interpolate"] = False
                     if verbose:
                         if field == "":
-                            print("Field [Blank Name] in subject " + subject + " has " + str(info["total"]) +
-                                  " nans, which violates the max nans rule of " + str(maxnanstotal) + " nans. [Blank " +
-                                  " Name] will not be interpolated!")
+                            print(
+                                "Field [Blank Name] in subject "
+                                + subject
+                                + " has "
+                                + str(info["total"])
+                                + " nans, which violates the max nans rule of "
+                                + str(maxnanstotal)
+                                + " nans. [Blank "
+                                + " Name] will not be interpolated!"
+                            )
                         else:
-                            print("Field " + field + " in subject " + subject + " has " + str(info["total"]) +
-                                  " nans, which violates the max nans rule of " + str(maxnanstotal) + " nans. " +
-                                  field + " will not be interpolated!")
+                            print(
+                                "Field "
+                                + field
+                                + " in subject "
+                                + subject
+                                + " has "
+                                + str(info["total"])
+                                + " nans, which violates the max nans rule of "
+                                + str(maxnanstotal)
+                                + " nans. "
+                                + field
+                                + " will not be interpolated!"
+                            )
                 elif -1 < maxnansrow < info["row"]:
                     info["interpolate"] = False
                     if verbose:
                         if field == "":
-                            print("Field [Blank Name] in subject " + subject + " has " + str(info["row"]) +
-                                  " nans in a row, which violates the max nans in a row rule of " +
-                                  str(maxnansrow) + " nans in a row. [Blank Name] will not be interpolated!")
+                            print(
+                                "Field [Blank Name] in subject "
+                                + subject
+                                + " has "
+                                + str(info["row"])
+                                + " nans in a row, which violates the max nans in a row rule of "
+                                + str(maxnansrow)
+                                + " nans in a row. [Blank Name] will not be interpolated!"
+                            )
                         else:
-                            print("Field " + field + " in subject " + subject + " has " + str(info["row"]) +
-                                  " nans in a row, which violates the max nans in a row rule of " +
-                                  str(maxnansrow) + " nans in a row. " + field + " will not be interpolated!")
+                            print(
+                                "Field "
+                                + field
+                                + " in subject "
+                                + subject
+                                + " has "
+                                + str(info["row"])
+                                + " nans in a row, which violates the max nans in a row rule of "
+                                + str(maxnansrow)
+                                + " nans in a row. "
+                                + field
+                                + " will not be interpolated!"
+                            )
                 else:
                     info["interpolate"] = True
 
         for key, value in data.items():  # For every subject in the data...
-
             # prepare the data for the interpolate.
-            #ingnore if it is the marker data, use the custom function set by the user
-            if category == "Trajectories" and "Magnitude( X )" not in value.keys() and "Count" not in value.keys():
-
-                self._prepare_interpolation(value, key, naninfo, category, False, sanitize, verbose)
+            # ingnore if it is the marker data, use the custom function set by the user
+            if (
+                category == "Trajectories"
+                and "Magnitude( X )" not in value.keys()
+                and "Count" not in value.keys()
+            ):
+                self._prepare_interpolation(
+                    value, key, naninfo, category, False, sanitize, verbose
+                )
             else:
-                self._prepare_interpolation(value, key, naninfo, category, interpolate, sanitize, verbose)
+                self._prepare_interpolation(
+                    value, key, naninfo, category, interpolate, sanitize, verbose
+                )
 
         if category == "Trajectories":
             my_interpolate = self.my_marker_interpolation(data)
@@ -629,22 +739,37 @@ class Vicon(MocapBase.MocapBase):
         if filename is not None:
             file_path = filename
         if verbose and mark_interpolated:
-            print("Saving data to " + file_path + ". Interpolated values will be marked with '!'.")
+            print(
+                "Saving data to "
+                + file_path
+                + ". Interpolated values will be marked with '!'."
+            )
         if verbose and not mark_interpolated:
-            print("Saving data to " + file_path + ". Interpolated values will not be marked.")
+            print(
+                "Saving data to "
+                + file_path
+                + ". Interpolated values will not be marked."
+            )
         with open(file_path, "wb") as f:
             f.seek(0)
             f.truncate()
             writer = csv.writer(f)
-            for category, subjects in self.data_dict.items():  # for every category in the data...
+            for (
+                category,
+                subjects,
+            ) in self.data_dict.items():  # for every category in the data...
                 if verbose:
                     print("Saving category " + category + "...")
                 #  write the header
                 writer.writerow([category])
                 if category == "Devices":
-                    writer.writerow([1000])  # Devices section has 1000 (units??) framerate
+                    writer.writerow(
+                        [1000]
+                    )  # Devices section has 1000 (units??) framerate
                 else:
-                    writer.writerow([100])  # unlike all other sections, with 100 framerate
+                    writer.writerow(
+                        [100]
+                    )  # unlike all other sections, with 100 framerate
                 # writer.writerow(["", ""])
 
                 line = ["", ""]
@@ -652,7 +777,9 @@ class Vicon(MocapBase.MocapBase):
                     line.append(subject)
                     if len(fields) > 1:  # if the subject has at least two fields...
                         for i in range(len(fields) - 1):
-                            line.append("")  # add empty space between subject names to make room for fields
+                            line.append(
+                                ""
+                            )  # add empty space between subject names to make room for fields
                 writer.writerow(line)
 
                 line = ["Frame", "Sub Frame"]
@@ -680,7 +807,10 @@ class Vicon(MocapBase.MocapBase):
                     for subject, fields in subjects.iteritems():
                         for field, f_vals in fields.iteritems():
                             x = f_vals["data"][i]
-                            if mark_interpolated and self._nan_dict[category][subject][field][i]:
+                            if (
+                                mark_interpolated
+                                and self._nan_dict[category][subject][field][i]
+                            ):
                                 x = "!" + str(x)
                             elif np.isnan(x):
                                 x = ""
@@ -708,34 +838,82 @@ class Vicon(MocapBase.MocapBase):
                 flag = True
             for subject, fields in subjects.iteritems():
                 if subject not in other.data_dict[category]:
-                    print("Subject " + subject + " in category " + category + " missing!")
+                    print(
+                        "Subject " + subject + " in category " + category + " missing!"
+                    )
                     flag = True
                 for field, f_vals in fields.iteritems():
                     if field not in other.data_dict[category][subject]:
                         flag = True
-                        print("Field " + field + " of subject " + subject + " in category " + category + " missing!")
-                    elif len(f_vals["data"]) != len(other.data_dict[category][subject][field]["data"]):
+                        print(
+                            "Field "
+                            + field
+                            + " of subject "
+                            + subject
+                            + " in category "
+                            + category
+                            + " missing!"
+                        )
+                    elif len(f_vals["data"]) != len(
+                        other.data_dict[category][subject][field]["data"]
+                    ):
                         flag = True
-                        print("Data length mismatch in field " + field \
-                              + " of subject " + subject + " in category " + category + "!")
-                    elif set(f_vals["data"]) != set(other.data_dict[category][subject][field]["data"]):
+                        print(
+                            "Data length mismatch in field "
+                            + field
+                            + " of subject "
+                            + subject
+                            + " in category "
+                            + category
+                            + "!"
+                        )
+                    elif set(f_vals["data"]) != set(
+                        other.data_dict[category][subject][field]["data"]
+                    ):
                         flag = True
-                        print("Data mismatch in field " + field \
-                              + " of subject " + subject + " in category " + category + "!")
-                    elif f_vals["data"] != other.data_dict[category][subject][field]["data"]:
+                        print(
+                            "Data mismatch in field "
+                            + field
+                            + " of subject "
+                            + subject
+                            + " in category "
+                            + category
+                            + "!"
+                        )
+                    elif (
+                        f_vals["data"]
+                        != other.data_dict[category][subject][field]["data"]
+                    ):
                         flag = True
-                        print("Data order mismatch in field " + field \
-                              + " of subject " + subject + " in category " + category + "!")
+                        print(
+                            "Data order mismatch in field "
+                            + field
+                            + " of subject "
+                            + subject
+                            + " in category "
+                            + category
+                            + "!"
+                        )
 
-                    if field in other.data_dict[category][subject] and f_vals["unit"] != \
-                            other.data_dict[category][subject][field]["unit"]:
+                    if (
+                        field in other.data_dict[category][subject]
+                        and f_vals["unit"]
+                        != other.data_dict[category][subject][field]["unit"]
+                    ):
                         flag = True
-                        print("Unit mismatch in field " + field \
-                              + " of subject " + subject + " in category " + category + "!")
+                        print(
+                            "Unit mismatch in field "
+                            + field
+                            + " of subject "
+                            + subject
+                            + " in category "
+                            + category
+                            + "!"
+                        )
         if not flag:
             print("No differences detected!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     file = "/home/nathaniel/AIM_GaitData/Gaiting_stairs/subject_08/subject_08_walking_01.csv"
     data = Vicon(file)

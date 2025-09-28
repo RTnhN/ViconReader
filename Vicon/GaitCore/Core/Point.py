@@ -55,12 +55,10 @@ Number = float | int
 
 
 class Point(object):
-
     def __init__(self, x: Number, y: Number, z: Number) -> None:
         self._x: float = float(x)
         self._y: float = float(y)
         self._z: float = float(z)
-
 
     @classmethod
     def from_points(cls, P1: Sequence[Number], P2: Sequence[Number]) -> "Point":
@@ -79,7 +77,7 @@ class Point(object):
         return Point(self.x, self.y, self.z) / mag
 
     def get_magnitude(self) -> float:
-        return float(np.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2))
+        return float(np.sqrt(self.x**2 + self.y**2 + self.z**2))
 
     @property
     def x(self) -> float:
@@ -115,7 +113,6 @@ class Point(object):
         return Point(x, y, z)
 
     def __radd__(self, other: Number) -> "Point":
-
         x = self.x + other
         y = self.y + other
         z = self.z + other
@@ -147,7 +144,6 @@ class Point(object):
     def __rmul__(self, other: Number) -> "Point":
         return self.__mul__(other)
 
-
     def __truediv__(self, other: Number) -> "Point":
         x = self.x / other
         y = self.y / other
@@ -161,7 +157,6 @@ class Point(object):
         z = self.z // other
 
         return Point(x, y, z)
-
 
     def dot(self, other: "Point") -> float:
         v1 = np.squeeze(other.toarray())
@@ -185,21 +180,23 @@ def distance(point1: Point, point2: Point) -> float:
     ans = np.sum(np.power((point1 - point2).toarray(), 2))
     return float(np.sqrt(float(ans)))
 
+
 def point_to_vector(point: Point) -> np.ndarray:
     """Returns a vectorized representation of a Point object. The vector is of the form [[x], [y], [z]]"""
     return np.array([[point.x], [point.y], [point.z]], dtype=float)
+
 
 def vector_to_point(vector: np.ndarray | Sequence[Sequence[Number]]) -> Point:
     """Returns a Point object from its vector representation."""
     return Point(vector[0][0], vector[1][0], vector[2][0])
 
+
 def cross(point1: Point, point2: Point) -> Point:
-    """Cross product wrapper """
+    """Cross product wrapper"""
     v1 = np.squeeze(point1.toarray())
     v2 = np.squeeze(point2.toarray())
     v3 = np.cross(v1, v2)
     return Point.from_array(v3)
-
 
 
 def dot(point1: Point, point2: Point) -> float:
@@ -207,8 +204,9 @@ def dot(point1: Point, point2: Point) -> float:
     v2 = np.squeeze(point2.toarray())
     return float(np.dot(v1, v2))
 
-if __name__ == '__main__':
-    p1 = Point(5,5,5)
-    p2 = Point(2,2.1,3.2)
-    print(cross(p1,p2))
+
+if __name__ == "__main__":
+    p1 = Point(5, 5, 5)
+    p2 = Point(2, 2.1, 3.2)
+    print(cross(p1, p2))
     print(p2.dot(p1))

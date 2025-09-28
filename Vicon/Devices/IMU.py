@@ -46,18 +46,17 @@
 from . import Devices
 from Vicon.GaitCore.Core import PointArray
 
-class IMU(Devices.Devices):
 
+class IMU(Devices.Devices):
     def __init__(self, name, sensor):
-        self._accel = PointArray.PointArray(sensor["ACCX"]["data"],
-                                 sensor["ACCY"]["data"],
-                                 sensor["ACCZ"]["data"])
-        self._gyro = PointArray.PointArray(sensor["GYROX"]["data"],
-                                 sensor["GYROY"]["data"],
-                                 sensor["GYROZ"]["data"])
+        self._accel = PointArray.PointArray(
+            sensor["ACCX"]["data"], sensor["ACCY"]["data"], sensor["ACCZ"]["data"]
+        )
+        self._gyro = PointArray.PointArray(
+            sensor["GYROX"]["data"], sensor["GYROY"]["data"], sensor["GYROZ"]["data"]
+        )
 
         super(IMU, self).__init__(name, sensor, "IMU")
-
 
     def get_accel(self):
         """

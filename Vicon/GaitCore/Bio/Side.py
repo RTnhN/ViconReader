@@ -44,10 +44,8 @@
 # //==============================================================================
 
 
-class Side():
-
+class Side:
     def __init__(self, left, right):
-
         self._left = left
         self._right = right
 

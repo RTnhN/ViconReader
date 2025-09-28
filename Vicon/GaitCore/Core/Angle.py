@@ -54,21 +54,22 @@ class Angle:
     """
 
     def __init__(self, angle_data: Mapping[str, Mapping[str, object]] | None = None):
-
         angle_data = angle_data or {}
 
-        self._rx: Sequence[float] = angle_data.get('RX', {}).get('data', [])
-        self._ry: Sequence[float] = angle_data.get('RY', {}).get('data', [])
-        self._rz: Sequence[float] = angle_data.get('RZ', {}).get('data', [])
+        self._rx: Sequence[float] = angle_data.get("RX", {}).get("data", [])
+        self._ry: Sequence[float] = angle_data.get("RY", {}).get("data", [])
+        self._rz: Sequence[float] = angle_data.get("RZ", {}).get("data", [])
 
-        self._tx: Sequence[float] = angle_data.get('TX', {}).get('data', [])
-        self._ty: Sequence[float] = angle_data.get('TY', {}).get('data', [])
-        self._tz: Sequence[float] = angle_data.get('TZ', {}).get('data', [])
+        self._tx: Sequence[float] = angle_data.get("TX", {}).get("data", [])
+        self._ty: Sequence[float] = angle_data.get("TY", {}).get("data", [])
+        self._tz: Sequence[float] = angle_data.get("TZ", {}).get("data", [])
 
         # Set rotational units
-        rot_units =    [angle_data.get('RX', {}).get('unit'),
-                        angle_data.get('RY', {}).get('unit'),
-                        angle_data.get('RZ', {}).get('unit')]
+        rot_units = [
+            angle_data.get("RX", {}).get("unit"),
+            angle_data.get("RY", {}).get("unit"),
+            angle_data.get("RZ", {}).get("unit"),
+        ]
 
         if not self.check_units(unit_list=rot_units):
             # TODO: Throw error
@@ -78,9 +79,11 @@ class Angle:
             self._rot_unit = rot_units[0]
 
         # Set translational units
-        trans_units =  [angle_data.get('TX', {}).get('unit'),
-                        angle_data.get('TY', {}).get('unit'),
-                        angle_data.get('TZ', {}).get('unit')]
+        trans_units = [
+            angle_data.get("TX", {}).get("unit"),
+            angle_data.get("TY", {}).get("unit"),
+            angle_data.get("TZ", {}).get("unit"),
+        ]
 
         if not self.check_units(unit_list=trans_units):
             # TODO: Throw error

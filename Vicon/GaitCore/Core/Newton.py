@@ -49,7 +49,6 @@ from typing import Sequence
 
 
 class Newton(object):
-
     def __init__(
         self,
         angle: Sequence[float],
