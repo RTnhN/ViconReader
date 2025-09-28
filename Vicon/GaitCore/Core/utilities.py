@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # //==============================================================================
 # /*
@@ -44,22 +43,29 @@
 # */
 # //==============================================================================
 
+from __future__ import annotations
+
+from typing import Sequence
 
 import numpy as np
 import scipy as sp
 
-def spline(x, Y, xx, kind='cubic'):
-    ''' Attempts to imitate the matlab version of spline'''
-    # from scipy.interpolate import interp1d
+
+def spline(
+    x: Sequence[float],
+    Y: np.ndarray,
+    xx: Sequence[float] | np.ndarray,
+    kind: str = "cubic",
+) -> np.ndarray:
+    """Return an interpolation matching MATLAB's ``spline`` helper."""
     if Y.ndim == 1:
-        return sp.interpolate.interp1d(x, Y, kind=kind)(xx)
-    F = [sp.interpolate.interp1d(x, Y[:, i]) for i in range(Y.shape[1])]
+        return sp.interpolate.interp1d(x, Y, kind=kind)(xx)  # type: ignore[no-any-return]
+    F = [sp.interpolate.interp1d(x, Y[:, i], kind=kind) for i in range(Y.shape[1])]
     return np.vstack([f(xx) for f in F])
 
-def smooth(y, box_pts=10):
-    """
-    smooth data using a running average
-    """
-    box = np.ones(box_pts)/box_pts
-    y_smooth = np.convolve(y, box, mode='valid')
+
+def smooth(y: Sequence[float], box_pts: int = 10) -> np.ndarray:
+    """Smooth ``y`` using a running average of ``box_pts`` width."""
+    box = np.ones(box_pts, dtype=float) / box_pts
+    y_smooth = np.convolve(y, box, mode="valid")
     return y_smooth

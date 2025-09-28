@@ -43,42 +43,53 @@
 # */
 # //==============================================================================
 
+from __future__ import annotations
+
+from typing import Sequence
+
+
 class Newton(object):
 
-    def __init__(self, angle, force, moment, power):
-        self._angle = angle
-        self._force = force
-        self._moment = moment
-        self._power = power
+    def __init__(
+        self,
+        angle: Sequence[float],
+        force: Sequence[float],
+        moment: Sequence[float],
+        power: Sequence[float],
+    ) -> None:
+        self._angle: Sequence[float] = angle
+        self._force: Sequence[float] = force
+        self._moment: Sequence[float] = moment
+        self._power: Sequence[float] = power
 
     @property
-    def angle(self):
+    def angle(self) -> Sequence[float]:
         return self._angle
 
     @property
-    def force(self):
+    def force(self) -> Sequence[float]:
         return self._force
 
     @property
-    def moment(self):
+    def moment(self) -> Sequence[float]:
         return self._moment
 
     @property
-    def power(self):
+    def power(self) -> Sequence[float]:
         return self._power
 
     @angle.setter
-    def angle(self, value):
+    def angle(self, value: Sequence[float]) -> None:
         self._angle = value
 
     @force.setter
-    def force(self, value):
+    def force(self, value: Sequence[float]) -> None:
         self._force = value
 
     @moment.setter
-    def moment(self, value):
+    def moment(self, value: Sequence[float]) -> None:
         self._moment = value
 
     @power.setter
-    def power(self, value):
+    def power(self, value: Sequence[float]) -> None:
         self._power = value

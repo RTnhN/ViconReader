@@ -44,31 +44,35 @@
 # //==============================================================================
 
 
+from __future__ import annotations
+
+import numpy as np
+from numpy.typing import ArrayLike
+
+
 class Data(object):
     """
     Call to hold data with a time sequence
     """
-    def __init__(self,data, time):
-        """
-        :param data: array of data
-        :param time: array of time
-        """
-        self._data = data
-        self._time = time
+
+    def __init__(self, data: ArrayLike, time: ArrayLike) -> None:
+        """Store an array of ``data`` and the corresponding ``time`` samples."""
+        self._data: ArrayLike = data
+        self._time: ArrayLike = time
 
     @property
-    def data(self):
-        """
-        get the data
-        """
+    def data(self) -> ArrayLike:
+        """Return the stored data samples."""
         return self._data
 
     @property
-    def time(self):
-        """
-        get the time
-        """
+    def time(self) -> ArrayLike:
+        """Return the stored timestamps."""
         return self._time
+
+    def as_arrays(self) -> tuple[np.ndarray, np.ndarray]:
+        """Return the data and time series as :class:`numpy.ndarray` instances."""
+        return np.asarray(self._data), np.asarray(self._time)
 
 
     # @data.setter
