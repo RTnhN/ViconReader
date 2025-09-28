@@ -148,7 +148,7 @@ def get_right_knee(file, start, end):
     y_total = []
     z_total= []
 
-    for frame in xrange(nfr):
+    for frame in range(nfr):
         x = []
         y = []
         z = []
