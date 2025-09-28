@@ -44,7 +44,7 @@
 # //==============================================================================
 
 from . import Devices
-from GaitCore.Core import PointArray
+from Vicon.GaitCore.Core import PointArray
 
 class IMU(Devices.Devices):
 

@@ -43,9 +43,9 @@
 # */
 # //==============================================================================
 
-from GaitCore.Bio.Sara import Sara
-from GaitCore.Bio.Score import Score
-from GaitCore.Core.Angle import Angle
+from .Sara import Sara
+from .Score import Score
+from ..Core.Angle import Angle
 
 
 class Joint():

@@ -45,7 +45,7 @@
 
 
 import numpy as np
-import GaitCore.Core as core
+from Vicon.GaitCore import Core as core
 from Vicon.Mocap import Vicon
 from Vicon import Markers
 import matplotlib.pyplot as plt

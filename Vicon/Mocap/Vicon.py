@@ -45,7 +45,7 @@
 import csv
 from typing import List, Any
 import numpy as np
-from GaitCore.Bio.Joint import Joint
+from Vicon.GaitCore.Bio.Joint import Joint
 from Vicon.Interpolation import Akmia
 from Vicon.Markers import ModelOutput as modeloutput
 from Vicon.Devices import EMG, IMU, Accel, ForcePlate

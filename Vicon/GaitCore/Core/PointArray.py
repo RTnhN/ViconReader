@@ -46,7 +46,7 @@
 # //==============================================================================
 
 
-import GaitCore.Core.Point as Point
+from . import Point
 import numpy as np
 
 class PointArray():
