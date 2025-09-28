@@ -45,10 +45,11 @@
 # */
 # //==============================================================================
 
-from GaitCore import Core as core
+from Vicon.GaitCore import Core as core
 import numpy as np
 from scipy.optimize import minimize
 import math
+
 # from numpy import *
 from math import sqrt
 import matplotlib.pyplot as plt
@@ -136,7 +137,6 @@ class Markers(object):
         """
         return self._filtered_markers.keys()
 
-
     def make_markers(self):
         """
         Convert the dictioanry into something a that can be easy read
@@ -146,15 +146,21 @@ class Markers(object):
         # TODO need to ensure that the frame are being created correctly and fill in missing data with a flag
 
         to_remove = [item for item in self._data_dict.keys() if "|" in item]
-        to_remove += [item for item in self._data_dict.keys() if "Trajectory Count" == item]
+        to_remove += [
+            item for item in self._data_dict.keys() if "Trajectory Count" == item
+        ]
         for rr in to_remove:
             self._data_dict.pop(rr, None)
 
         for key_name, value_name in self._data_dict.items():
-            fixed_name = key_name[1 + key_name.find(":"):]
+            fixed_name = key_name[1 + key_name.find(":") :]
             self._marker_names.append(fixed_name)
-            self._raw_markers[fixed_name] = core.PointArray.PointArray.init_point_array()
-            self._filtered_markers[fixed_name] = core.PointArray.PointArray.init_point_array()
+            self._raw_markers[fixed_name] = (
+                core.PointArray.PointArray.init_point_array()
+            )
+            self._filtered_markers[fixed_name] = (
+                core.PointArray.PointArray.init_point_array()
+            )
 
             # This removes some of the values that are not very useful
             # if value_name.keys()[0] == "Magnitude( X )" or value_name.keys()[0] == "Count":
@@ -168,9 +174,21 @@ class Markers(object):
             z_arr = value_name["Z"]["data"]
 
             # smooth the markers
-            x_filt = np.convolve(x_arr, np.ones((self._filter_window,)) / self._filter_window, mode='valid')
-            y_filt = np.convolve(y_arr, np.ones((self._filter_window,)) / self._filter_window, mode='valid')
-            z_filt = np.convolve(z_arr, np.ones((self._filter_window,)) / self._filter_window, mode='valid')
+            x_filt = np.convolve(
+                x_arr,
+                np.ones((self._filter_window,)) / self._filter_window,
+                mode="valid",
+            )
+            y_filt = np.convolve(
+                y_arr,
+                np.ones((self._filter_window,)) / self._filter_window,
+                mode="valid",
+            )
+            z_filt = np.convolve(
+                z_arr,
+                np.ones((self._filter_window,)) / self._filter_window,
+                mode="valid",
+            )
 
             # save a copy of both the unfiltered and fitlered markers
             for inx in range(len(x_filt)):
@@ -180,7 +198,6 @@ class Markers(object):
                 self._filtered_markers[fixed_name].append(point)
 
     def set_ground_plane(self, rigid_body, offset_height=14):
-
         markers = self.get_rigid_body("marker_names")
         fit, residual = fit_to_plane(markers)
 
@@ -188,7 +205,7 @@ class Markers(object):
 
     def _is_valid_marker(self, name):
         """If a marker consists of all zero points, it does not contain valid data,
-         and thus should not be included in the rigid body."""
+        and thus should not be included in the rigid body."""
         for point in self.get_marker(name):
             if not self._is_z_point(point):
                 return True
@@ -203,7 +220,9 @@ class Markers(object):
         :param filter: use the filtered values or the none fitlered values
         :return:
         """
-        no_digits = [''.join(x for x in i if not x.isdigit()) for i in self._marker_names]  # removes digits
+        no_digits = [
+            "".join(x for x in i if not x.isdigit()) for i in self._marker_names
+        ]  # removes digits
         single_item = list(set(no_digits))  # removes redundent items
         keys = self._marker_names
 
@@ -236,10 +255,10 @@ class Markers(object):
             xo = (x - o) / np.linalg.norm(x - o)
             yo = (y - o) / np.linalg.norm(y - o)
             zo = np.cross(xo, yo)
-            xo = np.pad(xo, (0, 1), 'constant')
-            yo = np.pad(yo, (0, 1), 'constant')
-            zo = np.pad(zo, (0, 1), 'constant')
-            p = np.pad(o, (0, 1), 'constant')
+            xo = np.pad(xo, (0, 1), "constant")
+            yo = np.pad(yo, (0, 1), "constant")
+            zo = np.pad(zo, (0, 1), "constant")
+            p = np.pad(o, (0, 1), "constant")
             p[-1] = 1
             F = np.column_stack((xo, yo, zo, p))
             frames.append(F)
@@ -262,7 +281,7 @@ class Markers(object):
         """
 
         for name, value in self._rigid_body.items():
-            if len(value)==4:
+            if len(value) == 4:
                 frame = self.make_frame(value[0], value[1], value[2], value[3])
                 self.add_frame(name, frame)
 
@@ -277,16 +296,21 @@ class Markers(object):
             if name in bodies:
                 for ii in range(len(value[0])):
                     frames.append(
-                        cloud_to_cloud(bodies[name], [value[0][ii], value[1][ii], value[2][ii], value[3][ii]])[0])
+                        cloud_to_cloud(
+                            bodies[name],
+                            [value[0][ii], value[1][ii], value[2][ii], value[3][ii]],
+                        )[0]
+                    )
                 self.add_frame(name, frames)
 
     def def_joint(self, name, parentBody, childBody, ballJoint=True):
-
         try:
             assert parentBody in self.get_rigid_body_keys()
             assert childBody in self.get_rigid_body_keys()
         except AssertionError:
-            raise ValueError("At least one specified rigid body is not present in this data!")
+            raise ValueError(
+                "At least one specified rigid body is not present in this data!"
+            )
 
         if ballJoint:
             self._balljoints_def[name] = [parentBody, childBody]
@@ -308,10 +332,18 @@ class Markers(object):
             if verbose:
                 print("Manually calculating joints")
             for name, bodies in self._balljoints_def.items():
-                (self._joints[name], self._joints_rel[name], self._joints_rel_child[name]) = self._calc_ball_joint(bodies[0], bodies[1])
+                (
+                    self._joints[name],
+                    self._joints_rel[name],
+                    self._joints_rel_child[name],
+                ) = self._calc_ball_joint(bodies[0], bodies[1])
 
             for name, bodies in self._hingejoints_def.items():
-                (self._joints[name], self._joints_rel[name], self._joints_rel_child[name]) = self._calc_hinge_joint(bodies[0], bodies[1])
+                (
+                    self._joints[name],
+                    self._joints_rel[name],
+                    self._joints_rel_child[name],
+                ) = self._calc_hinge_joint(bodies[0], bodies[1])
 
     def get_joint(self, name):
         """
@@ -340,10 +372,18 @@ class Markers(object):
         return self._joints_rel_child
 
     def dist_joints(self, a, b):
-        return [dist(self.get_joint(a)[n], self.get_joint(b)[n]) for n in range(len(self._joints[a]))]
+        return [
+            dist(self.get_joint(a)[n], self.get_joint(b)[n])
+            for n in range(len(self._joints[a]))
+        ]
 
     def body_rel_body(self, a, b, t):
-        return global_point_to_frame(self.get_frame(b)[t], local_point_to_global(self.get_frame(a)[t], core.Point.vector_to_point([[0], [0], [0]])))
+        return global_point_to_frame(
+            self.get_frame(b)[t],
+            local_point_to_global(
+                self.get_frame(a)[t], core.Point.vector_to_point([[0], [0], [0]])
+            ),
+        )
 
     def body_centroid(self, a, t):
         pos = [self.get_rigid_body(a)[n][t] for n in range(4)]
@@ -355,7 +395,7 @@ class Markers(object):
         x = 0
         for i in len_raw:
             x += i
-        return x/len(len_raw)
+        return x / len(len_raw)
 
     def get_frame(self, name):
         """
@@ -421,8 +461,10 @@ class Markers(object):
         frames = len(child[0])
 
         # Obtain the locations of the child markers relative to the Parent rigid body
-        child_by_parent = [[global_point_to_frame(parent_frame[n], child[i][n]) for n in range(frames)] for i in
-                           range(4)]
+        child_by_parent = [
+            [global_point_to_frame(parent_frame[n], child[i][n]) for n in range(frames)]
+            for i in range(4)
+        ]
         # Identical to child except for the difference in frame of reference
         # Points are accessed through child_by_parent[marker][frame]
 
@@ -432,10 +474,18 @@ class Markers(object):
         # By switching to the parent's reference frame, we can pretend as if the joint is stationary
 
         joint = []
-        joint_by_child = core.Point.point_to_vector(global_point_to_frame(
-            self.get_frame(child_name)[0], local_point_to_global(parent_frame[0], core.Point.vector_to_point(jointraw))))
+        joint_by_child = core.Point.point_to_vector(
+            global_point_to_frame(
+                self.get_frame(child_name)[0],
+                local_point_to_global(
+                    parent_frame[0], core.Point.vector_to_point(jointraw)
+                ),
+            )
+        )
         for n in range(frames):  # Convert back from the hip's frame to the global frame
-            jointn_global = local_point_to_global(parent_frame[n], core.Point.vector_to_point(jointraw))
+            jointn_global = local_point_to_global(
+                parent_frame[n], core.Point.vector_to_point(jointraw)
+            )
             joint.append([jointn_global.x, jointn_global.y, jointn_global.z])
 
         return joint, jointraw, joint_by_child
@@ -453,8 +503,17 @@ class Markers(object):
 
         frames = len(child[0])
 
-        child_by_parent = [[global_point_to_frame(parent_frame[n], child[i][n]) for n in range(frames)] for i in range(4)]
-        parent_by_parent = [[global_point_to_frame(parent_frame[n], parent[i][n]) for n in range(frames)] for i in range(4)]
+        child_by_parent = [
+            [global_point_to_frame(parent_frame[n], child[i][n]) for n in range(frames)]
+            for i in range(4)
+        ]
+        parent_by_parent = [
+            [
+                global_point_to_frame(parent_frame[n], parent[i][n])
+                for n in range(frames)
+            ]
+            for i in range(4)
+        ]
 
         # calc_CoR isn't meant to be used with hinge joints
         # It still gives us a point, but the location of this joint is poorly defined along the axis of rotation
@@ -467,29 +526,60 @@ class Markers(object):
         jointaxisraw = calc_AoR(child_by_parent)
 
         joint_by_parent = []
-        for frame in range(frames):  # Find the location on the AoR that is closest to both relevant rigid bodies
+        for frame in range(
+            frames
+        ):  # Find the location on the AoR that is closest to both relevant rigid bodies
             l_parentn_local = [parent_by_parent[n][frame] for n in range(4)]
             l_parentn_local = [[n.x, n.y, n.z] for n in l_parentn_local]
 
             l_childn_local = [child_by_parent[n][frame] for n in range(4)]
             l_childn_local = [[n.x, n.y, n.z] for n in l_childn_local]
 
-            l_jointn_local = minimize_center(l_childn_local+l_parentn_local, jointaxisraw, [jointraw[0][0], jointraw[1][0], jointraw[2][0]])
+            l_jointn_local = minimize_center(
+                l_childn_local + l_parentn_local,
+                jointaxisraw,
+                [jointraw[0][0], jointraw[1][0], jointraw[2][0]],
+            )
             joint_by_parent.append(l_jointn_local)
 
         joint = []
-        joint_by_child = core.Point.point_to_vector(global_point_to_frame(
-            self.get_frame(child_name)[0], local_point_to_global(parent_frame[0], core.Point.vector_to_point(jointraw))))
+        joint_by_child = core.Point.point_to_vector(
+            global_point_to_frame(
+                self.get_frame(child_name)[0],
+                local_point_to_global(
+                    parent_frame[0], core.Point.vector_to_point(jointraw)
+                ),
+            )
+        )
         for n in range(frames):
-            p = core.Point.Point(joint_by_parent[n].x[0], joint_by_parent[n].x[1], joint_by_parent[n].x[2])
+            p = core.Point.Point(
+                joint_by_parent[n].x[0],
+                joint_by_parent[n].x[1],
+                joint_by_parent[n].x[2],
+            )
             l_jointn_global = local_point_to_global(parent_frame[n], p)
             joint.append([l_jointn_global.x, l_jointn_global.y, l_jointn_global.z])
 
-        return joint, [[np.mean([joint_by_parent[n].x[0] for n in range(frames)])],
-                       [np.mean([joint_by_parent[n].x[1] for n in range(frames)])],
-                       [np.mean([joint_by_parent[n].x[2] for n in range(frames)])]], joint_by_child
+        return (
+            joint,
+            [
+                [np.mean([joint_by_parent[n].x[0] for n in range(frames)])],
+                [np.mean([joint_by_parent[n].x[1] for n in range(frames)])],
+                [np.mean([joint_by_parent[n].x[2] for n in range(frames)])],
+            ],
+            joint_by_child,
+        )
 
-    def play(self, joints=False, save=False, name="im", center=False, centerPoint=None, addlPoints=None, addlPointsMin=0):
+    def play(
+        self,
+        joints=False,
+        save=False,
+        name="im",
+        center=False,
+        centerPoint=None,
+        addlPoints=None,
+        addlPointsMin=0,
+    ):
         """
         play an animation of the markers
         :param joints: bool to display calculated joint centers
@@ -509,7 +599,6 @@ class Markers(object):
         fps = 10  # Frame per sec
         keys = self._filtered_markers.keys()
         nfr = len(self._filtered_markers[list(keys)[0]])  # Number of frames
-
 
         for frame in range(nfr):
             x = []
@@ -541,7 +630,7 @@ class Markers(object):
                     if frame >= len(joint):
                         f = len(joint) - 1
 
-                    if True: #not center:
+                    if True:  # not center:
                         x.append(joint[frame].x)
                         y.append(joint[frame].y)
                         z.append(joint[frame].z)
@@ -569,20 +658,21 @@ class Markers(object):
                         z.append(point[2] - root0.z + root0z0)
                 addl_total.append([x, y, z])
 
-
-
         self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111, projection='3d')
+        self._ax = self._fig.add_subplot(111, projection="3d")
         self._ax.set_autoscale_on(False)
 
-        ani = animation.FuncAnimation(self._fig,
-                                      self.__animate, nfr,
-                                      fargs=(x_total, y_total, z_total, joints_points, addl_total, addlPointsMin),
-                                      interval=100 / fps)
+        ani = animation.FuncAnimation(
+            self._fig,
+            self.__animate,
+            nfr,
+            fargs=(x_total, y_total, z_total, joints_points, addl_total, addlPointsMin),
+            interval=100 / fps,
+        )
         if save:
-            Writer = animation.writers['ffmpeg']
-            writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-            ani.save(name + '.mp4', writer=writer)
+            Writer = animation.writers["ffmpeg"]
+            writer = Writer(fps=15, metadata=dict(artist="Me"), bitrate=1800)
+            ani.save(name + ".mp4", writer=writer)
             plt.show()
         else:
             plt.show()
@@ -599,23 +689,31 @@ class Markers(object):
         """
 
         self._ax.clear()
-        self._ax.set_xlabel('X Label')
-        self._ax.set_ylabel('Y Label')
-        self._ax.set_zlabel('Z Label')
+        self._ax.set_xlabel("X Label")
+        self._ax.set_ylabel("Y Label")
+        self._ax.set_zlabel("Z Label")
         self._ax.axis([-500, 500, -500, 500])
         self._ax.set_zlim3d(0, 1250)
-        self._ax.scatter(x[frame], y[frame], z[frame], c='r', marker='o')
+        self._ax.scatter(x[frame], y[frame], z[frame], c="r", marker="o")
         if len(centers) > 0:
-            self._ax.scatter(centers[frame][0], centers[frame][1], centers[frame][2], c='g', marker='o')
+            self._ax.scatter(
+                centers[frame][0],
+                centers[frame][1],
+                centers[frame][2],
+                c="g",
+                marker="o",
+            )
         if len(addl) > 0 and frame >= addl_min:
-            self._ax.scatter(addl[frame][0], addl[frame][1], addl[frame][2], c='b', marker='o')
+            self._ax.scatter(
+                addl[frame][0], addl[frame][1], addl[frame][2], c="b", marker="o"
+            )
 
     def save_joints(self, verbose=False, jlim=None, doBall=True, doHinge=True):
         file_path = self._dat_name + "-joints.csv"
         if verbose:
             print("Saving joints data to " + file_path)
 
-        with open(file_path, "w", newline='') as f:
+        with open(file_path, "w", newline="") as f:
             f.seek(0)
             f.truncate()
             writer = csv.writer(f)
@@ -649,7 +747,7 @@ class Markers(object):
         if verbose:
             print("Reading joint data from " + filename)
 
-        with open(filename, "r", newline='') as f:
+        with open(filename, "r", newline="") as f:
             reader = csv.reader(f)
             next(reader)
             while True:
@@ -657,11 +755,18 @@ class Markers(object):
                     name, parent, child = next(reader)
                 except ValueError:
                     break
-                if parent not in self.get_rigid_body_keys() or child not in self.get_rigid_body_keys():
+                if (
+                    parent not in self.get_rigid_body_keys()
+                    or child not in self.get_rigid_body_keys()
+                ):
                     if strict:
-                        raise ValueError("A rigid body present in this file isn't present in this spreadsheet!")
+                        raise ValueError(
+                            "A rigid body present in this file isn't present in this spreadsheet!"
+                        )
                     if verbose:
-                        print("WARNING: A rigid body present in this file isn't present in this spreadsheet!")
+                        print(
+                            "WARNING: A rigid body present in this file isn't present in this spreadsheet!"
+                        )
                 if verbose:
                     print("Detected ball joint " + name)
 
@@ -681,11 +786,18 @@ class Markers(object):
                     name, parent, child = next(reader)
                 except:
                     break
-                if parent not in self.get_rigid_body_keys() or child not in self.get_rigid_body_keys():
+                if (
+                    parent not in self.get_rigid_body_keys()
+                    or child not in self.get_rigid_body_keys()
+                ):
                     if strict:
-                        raise ValueError("A rigid body present in this file isn't present in this spreadsheet!")
+                        raise ValueError(
+                            "A rigid body present in this file isn't present in this spreadsheet!"
+                        )
                     if verbose:
-                        print("WARNING: A rigid body present in this file isn't present in this spreadsheet!")
+                        print(
+                            "WARNING: A rigid body present in this file isn't present in this spreadsheet!"
+                        )
                 if verbose:
                     print("Detected hinge joint " + name)
 
@@ -710,13 +822,15 @@ class Markers(object):
         my_frames = self.get_frame(frame_name)
         my_marker = self.get_marker(point_name)
         new_points = core.PointArray.init_point_array()
-        for point, frame in zip( my_marker, my_frames):
+        for point, frame in zip(my_marker, my_frames):
             p = global_point_to_frame(frame, point)
             new_points.append(p)
         return new_points
 
+
 def avg(n):
-    return sum(n)/len(n)
+    return sum(n) / len(n)
+
 
 def transform_markers(transforms, markers):
     """
@@ -744,7 +858,9 @@ def global_to_frame(frame, global_vector):
 
 def global_point_to_frame(frame, global_point):
     """Transforms a Point object from the global frame to the provided frame."""
-    return core.Point.vector_to_point(global_to_frame(frame, core.Point.point_to_vector(global_point)))
+    return core.Point.vector_to_point(
+        global_to_frame(frame, core.Point.point_to_vector(global_point))
+    )
 
 
 def frame_to_global(frame, local_vector):
@@ -754,11 +870,14 @@ def frame_to_global(frame, local_vector):
 
 def local_point_to_global(frame, local_point):
     """Transforms a Point object in the provided local frame to the global frame."""
-    return core.Point.vector_to_point(frame_to_global(frame, core.Point.point_to_vector(local_point)))
+    return core.Point.vector_to_point(
+        frame_to_global(frame, core.Point.point_to_vector(local_point))
+    )
 
 
 def dist(x, y):
-    return ((x[0] - y[0])**2 + (x[1] - y[1])**2 + (x[2] - y[2])**2)**0.5
+    return ((x[0] - y[0]) ** 2 + (x[1] - y[1]) ** 2 + (x[2] - y[2]) ** 2) ** 0.5
+
 
 def make_frame(markers):
     """
@@ -775,10 +894,10 @@ def make_frame(markers):
     xo = origin - x_axis
     yo = origin - y_axis
     zo = np.cross(xo, yo)
-    xo = np.pad(xo, (0, 1), 'constant')
-    yo = np.pad(yo, (0, 1), 'constant')
-    zo = np.pad(zo, (0, 1), 'constant')
-    p = np.pad(origin, (0, 1), 'constant')
+    xo = np.pad(xo, (0, 1), "constant")
+    yo = np.pad(yo, (0, 1), "constant")
+    zo = np.pad(zo, (0, 1), "constant")
+    p = np.pad(origin, (0, 1), "constant")
     p[-1] = 1
     return np.column_stack((xo, yo, zo, p))
 
@@ -880,15 +999,15 @@ def avg_vector(markers):
 
 
 def calc_CoR(markers):
-    '''
-        Calculate the center of rotation given two data
-        sets representing two frames on separate rigid bodies connected by a
-        spherical joint. The function calculates the position of the CoR in the
-        reference rigidi body frame
-        For more information on this derivation see "New Least Squares Solutions
-        for Estimating the Average Centre of Rotation and the Axis of Rotation"
-        by Sahan S. Hiniduma
-    '''
+    """
+    Calculate the center of rotation given two data
+    sets representing two frames on separate rigid bodies connected by a
+    spherical joint. The function calculates the position of the CoR in the
+    reference rigidi body frame
+    For more information on this derivation see "New Least Squares Solutions
+    for Estimating the Average Centre of Rotation and the Axis of Rotation"
+    by Sahan S. Hiniduma
+    """
 
     A = __calc_A(markers)
     b = __calc_b(markers)
@@ -914,7 +1033,8 @@ def calc_AoR(markers):
     """
     A = __calc_A(markers)  # calculates the A matrix
     E_vals, E_vecs = np.linalg.eig(
-        A)  # I believe that the np function eig has a different output than the matlab function eigs
+        A
+    )  # I believe that the np function eig has a different output than the matlab function eigs
     min_E_val_idx = np.argmin(E_vals)
     axis = E_vecs[:, min_E_val_idx]
     return axis
@@ -955,7 +1075,7 @@ def __calc_b(markers):
         for point in marker:
             # v = np.array((point.x, point.y, point.z))
             # print np.dot(v.reshape((-1,1)),v.reshape((-1,1)))
-            v2 = (point.x * point.x + point.y * point.y + point.z * point.z)
+            v2 = point.x * point.x + point.y * point.y + point.z * point.z
             v2_sum = v2_sum + invN * v2
             v3_sum = v3_sum + invN * (v2 * np.array((point.x, point.y, point.z)))
         b = b + v3_sum - v2_sum * vp_norm[ii]
@@ -1051,7 +1171,11 @@ def minimize_center(vectors, axis, initial):
     def objective(x):
         C = 0
         for vect in vectors:
-            C += np.sqrt(np.power((x[0] - vect[0]), 2) + np.power((x[1] - vect[1]), 2) + np.power((x[2] - vect[2]), 2))
+            C += np.sqrt(
+                np.power((x[0] - vect[0]), 2)
+                + np.power((x[1] - vect[1]), 2)
+                + np.power((x[2] - vect[2]), 2)
+            )
         return C
 
     def constraint(x):
@@ -1060,10 +1184,11 @@ def minimize_center(vectors, axis, initial):
     N = 1000
     b = (-N, N)
     bnds = (b, b, b, b)
-    con = {'type': 'eq', 'fun': constraint}
-    cons = ([con])
-    solution = minimize(objective, np.append(initial, 0), method='SLSQP', \
-                        bounds=bnds, constraints=cons)
+    con = {"type": "eq", "fun": constraint}
+    cons = [con]
+    solution = minimize(
+        objective, np.append(initial, 0), method="SLSQP", bounds=bnds, constraints=cons
+    )
     return solution
 
 
@@ -1081,9 +1206,7 @@ def calc_mass_vect(markers):
         y += point.y
         z += point.z
 
-    vect = np.array((x / len(markers),
-                     y / len(markers),
-                     z / len(markers)))
+    vect = np.array((x / len(markers), y / len(markers), z / len(markers)))
     return vect
 
 
@@ -1106,7 +1229,7 @@ def get_distance(point1, point2):
     :param point2: secound point
     :return: distance between two Points
     """
-    return np.sqrt(np.sum(np.power((point1 - point2).toarray(),2) ))
+    return np.sqrt(np.sum(np.power((point1 - point2).toarray(), 2)))
 
 
 def R_to_axis_angle(matrix):
@@ -1223,12 +1346,12 @@ def fit_to_plane(points):
     fit = (A.T * A).I * A.T * b
 
     errors = b - A * fit
-    residual =  np.linalg.norm(errors)
-    #fit = unit_vector(fit)
+    residual = np.linalg.norm(errors)
+    # fit = unit_vector(fit)
     return np.asarray(fit), residual
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # np.core.Point doesn't exist
     # DataSets1 = [np.core.Point(531.6667, - 508.9951, 314.4273),
     #              np.core.Point(510.5082, - 457.7791, 357.1969),
@@ -1236,11 +1359,13 @@ if __name__ == '__main__':
     #              np.core.Point(552.4579, - 566.4891, 393.5611),
     #              np.core.Point(505.9442, - 584.8004, 392.4779)]
 
-    DataSets2 = [[-55.4398, 406.9759, - 487.4170],
-                 [-117.4716, 384.3339, -510.7755],
-                 [-99.5008, 336.9028, - 511.4401],
-                 [-84.8805, 394.2636, - 393.6067],
-                 [-67.3354, 347.3059, - 393.7805]]
+    DataSets2 = [
+        [-55.4398, 406.9759, -487.4170],
+        [-117.4716, 384.3339, -510.7755],
+        [-99.5008, 336.9028, -511.4401],
+        [-84.8805, 394.2636, -393.6067],
+        [-67.3354, 347.3059, -393.7805],
+    ]
 
     # marker = [np.core.Point(0.0, 50.0, 0.0),
     #           np.core.Point(-70.0, 50.0, 0.0),
