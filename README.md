@@ -1,7 +1,9 @@
-# AIM_Vicon
+# ViconReader
+
+This is a package to read in Vicon data for analysis. It is based on the Vicon package [WPI-AIM/AIM_Vicon](https://github.com/WPI-AIM/AIM_Vicon) to be more robust and easier to use. Thanks to the original authors for their work. All of the code that currently has the BSD copyright notices on them should retain them.
 
 
-## Authors
+## Original Authors
 - [Nathaniel Goldfarb](https://github.com/nag92) (nagoldfarb@wpi.edu)
 - [Alek Lewis](https://github.com/ajlewis02) (ajlewis@wpi.edu)
 
@@ -11,43 +13,38 @@ the Vicon motion capture system. It will automatically attempt to interpolate mi
 
 
 ## PyPI Dependencies
-* Python 3 (may work for Python 2, but deprecated and not supported)
+* Python 3 
 * [numpy](https://numpy.org/)
 * [matplotlib](https://matplotlib.org/)
 * [pandas](https://pandas.pydata.org/)
 * [scipy](https://www.scipy.org/)
 
-## External Dependencies 
-This package requires:
-
-* [AIM_GaitCore](https://github.com/WPI-AIM/AIM_GaitCore.git)
-
-
-
-## Notes
-- subject prefix removed from marker name i.e (subject:RKNEE -> RKNEE)
-- New devices connected to the Vicon should extend the Device class
 
 ## Installation
 This package can be installed via pip:
 ```bash
-pip install git+https://github.com/WPI-AIM/AIM_Vicon.git
-```
+pip install git+https://github.com/RTnhN/ViconReader.git
 
-(If you have both Python 2 and Python 3 installed you'll need to specify `pip3` - `pip` defaults to Python 2 if installed.)
+uv add git+https://github.com/RTnhN/ViconReader.git
+```
 
 ## Updating
 This package can be updated through pip:
 ```bash
-pip install --upgrade git+https://github.com/WPI-AIM/AIM_Vicon.git
+pip install --upgrade git+https://github.com/RTnhN/ViconReader.git
+
 ```
 
 If necessary, GaitCore can also be updated through pip:
 ```bash
-pip install --upgrade git+https://github.com/WPI-AIM/AIM_GaitCore.git
+pip install --upgrade git+https://github.com/RTnhN/ViconReader.git
+
 ```
 
-##Usage
+## NOTE: EVERYTHING BELOW THIS LINE IS OUTDATED
+
+
+## Usage
 
 ### Vicon
 
