@@ -44,7 +44,6 @@
 # */
 # //==============================================================================
 
-import copy
 
 from Vicon.GaitCore import Core as core
 from Vicon.GaitCore.Bio.Sara import Sara

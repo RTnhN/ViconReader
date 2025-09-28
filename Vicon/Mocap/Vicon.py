@@ -612,7 +612,7 @@ class Vicon(MocapBase.MocapBase):
 
             # prepare the data for the interpolate.
             #ingnore if it is the marker data, use the custom function set by the user
-            if category == "Trajectories" and not ("Magnitude( X )" in value.keys()) and not ("Count" in value.keys()):
+            if category == "Trajectories" and "Magnitude( X )" not in value.keys() and "Count" not in value.keys():
 
                 self._prepare_interpolation(value, key, naninfo, category, False, sanitize, verbose)
             else:

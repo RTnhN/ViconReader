@@ -1,6 +1,5 @@
 import pandas
 import numpy as np
-import copy
 
 
 class Interpolation(object):

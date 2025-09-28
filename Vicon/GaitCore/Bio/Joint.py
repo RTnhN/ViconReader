@@ -45,7 +45,6 @@
 
 from .Sara import Sara
 from .Score import Score
-from ..Core.Angle import Angle
 
 
 class Joint():

@@ -53,9 +53,8 @@ import math
 # from numpy import *
 from math import sqrt
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from pathlib import Path
-import csv, os
+import csv
+import os
 
 import matplotlib.animation as animation
 

@@ -43,16 +43,10 @@
 #     \version   0.1
 # */
 # //==============================================================================
-import csv
-from typing import List, Any
 
-import pandas
 import numpy as np
-from Vicon.Markers import ModelOutput as modeloutput
 from Vicon.Markers import Markers as markers
-from Vicon.Devices import EMG, IMU, Accel, ForcePlate
 import matplotlib.pyplot as plt
-from Vicon import Markers
 from Vicon.Interpolation import Interpolation
 import abc
 from Vicon.Interpolation import Akmia

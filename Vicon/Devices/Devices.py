@@ -42,7 +42,6 @@
 #     \version   0.1
 # */
 # //==============================================================================
-import abc
 class Devices(object):
 
     def __init__(self, name, sensor, type, offest=20):
